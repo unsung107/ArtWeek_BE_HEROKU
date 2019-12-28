@@ -212,6 +212,7 @@ def update(request, weeks):
             temp.locationID = detail_ts.find('placeSeq').text
             temp.save()
             cnt += 1
+            print(title, address, type)
         except:
             print('error')
             continue
@@ -293,6 +294,5 @@ def getArt(request):
             }
             result[cnt] = temp
             cnt += 1
-            print(title, address, type)
 
     return JsonResponse(result)
