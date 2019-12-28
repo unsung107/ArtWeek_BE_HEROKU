@@ -38,8 +38,7 @@ def update(request):
     tree = elemTree.fromstring(result)
     ts = tree.findall('./db')
     today = str(datetime.date.today())
-
-    # db = pymysql.connect(host="artweekforart.c3wz4cqqzwga.us-east-1.rds.amazonaws.com", user="Artweek_admin", passwd="Tkvl2qkstmxjel", db="artweekforart", charset='utf8')
+    cnt = 0
     for t in ts:
         try:
             eventID = t.find('mt20id').text
@@ -117,17 +116,6 @@ def update(request):
             temp.imgUrl = t.find('poster').text
             temp.type = t.find('genrenm').text
             temp.createdAt = now
-            # if tables.get(type) != None:
-            #     table = tables[type]
-            # else:
-            #     continue
-
-            # show_url = f'{base_url}pblprfr/{eventID}?service={KEY}'
-            # detail_response = requests.get(show_url)
-            # detail_result = detail_response.text
-            # detail_tree = elemTree.fromstring(detail_result)
-            # detail_ts = detail_tree.find('./db')
-
 
             locationID = detail_ts.find('mt10id').text
             temp.locationID = detail_ts.find('mt10id').text
@@ -163,20 +151,9 @@ def update(request):
                 ticketUrl = list(ticketUrl)
                 ticketUrl = ticketUrl[:-1]
                 temp.ticketUrl = ''.join(ticketUrl)
-            # cursor = db.cursor()
-
-            # sql2 = f'select eventStatus from {table} where eventID like {eventID}'
-            # cursor.execute(sql2)
-            # row = cursor.fetchall()
-            # print(row , eventStatus)
-
-            # sql = f'INSERT INTO {table}(eventID, title, startDate, endDate, location, imgUrl, type, locationID, eventStatus, performer, director, address, latitude, longitude, fee, age, timeTable, createdAt) Values ("{eventID}", "{title}", "{startDate}", "{endDate}", "{location}", "{imgUrl}", "{type}", "{locationID}", "{eventStatus}", "{performer}", "{director}", "{address}", "{latitude}", "{longitude}", "{fee}", "{age}", "{timeTable}", "{today}") ON DUPLICATE KEY UPDATE eventStatus="{eventStatus}"'
-
-            # cursor.execute(sql)
             temp.save()
-            print(type, title, address)
+            cnt += 1
         except:
-            print('error')
             continue
 
     KEY2 = config('KEY2')
@@ -206,19 +183,6 @@ def update(request):
             temp.imgUrl = t.find('thumbnail').text
             temp.type = '전시'
             temp.createAt = now
-            # ticket_url = f'http://www.kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00020&mt20Id={eventID}'
-
-            # ticketUrl = ''
-            # response = requests.get(ticket_url)
-            # soup = BeautifulSoup(response.text, 'html.parser')
-            # for link in soup.select('.layerPopCon .btnType01 .btnType01_wrap a'):
-            #     print(link.get('href'))
-            #     ticketUrl += link.get('href') + ','
-
-            # if ticketUrl:
-            #     ticketUrl = list(ticketUrl)
-            #     ticketUrl = ticketUrl[:-1]
-            #     ticketUrl = ''.join(ticketUrl)
 
             show_url = f'{base_url}d/?seq={eventID}&serviceKey={KEY2}'
 
@@ -240,25 +204,11 @@ def update(request):
             temp.latitude = detail_ts.find('gpsX').text
             temp.longitude = detail_ts.find('gpsY').text
             temp.locationID = detail_ts.find('placeSeq').text
-            # cursor = db.cursor()
-
-            # sql2 = f'select eventStatus from Exhibition where eventID like {eventID}'
-            # cursor.excute(sql2)
-            # row = cursor.fetchall()
-            # print(row , eventStatus)
-
-            # sql = f'INSERT INTO Exhibition(eventID, title, startDate, endDate, location, imgUrl, type, locationID, eventStatus, performer, director, address, latitude, longitude, fee, age, timeTable, createdAt) Values ("{eventID}", "{title}", "{startDate}", "{endDate}", "{location}", "{imgUrl}", "{type}", "{locationID}", "{eventStatus}", "{performer}", "{director}", "{address}", "{latitude}", "{longitude}", "{fee}", "{age}", "{timeTable}", "{nowDate}") ON DUPLICATE KEY UPDATE eventStatus="{eventStatus}"'
-            # sql = f'INSERT INTO Exhibition(eventID, title, startDate, endDate, location, imgUrl, type, locationID, eventStatus, performer, director, address, latitude, longitude, fee, age, timeTable, createdAt, ticketUrl) Values ("{eventID}", "{title}", "{startDate}", "{endDate}", "{location}", "{imgUrl}", "{type}", "{locationID}", "{eventStatus}", "{performer}", "{director}", "{address}", "{latitude}", "{longitude}", "{fee}", "{age}", "{timeTable}", "{nowDate}", "{ticketUrl}") ON DUPLICATE KEY UPDATE ticketUrl="{ticketUrl}"' 
-        # print(sql)
-            # cursor.execute(sql)
             temp.save()
-            print(type, title, address)
+            cnt += 1
         except:
-            print('error')
             continue
-    return 0
-    # db.commit()
-    # db.close()
+    return JsonResponse({'cnt': cnt})
 
 
 @api_view(['POST'])
