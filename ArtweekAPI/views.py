@@ -255,11 +255,11 @@ def getArt(request):
                     if value not in temp["title"]:
                         flag = 1
                 elif key == 'startDate':
-                    if datetime.date(int(value[:4]), int(value[4:6]), int(value[6:])) > datetime.date(int(temp['startDate'][:4]), int(temp['startDate'][5:7]), int(temp["startDate"][8:])):
+                    if datetime.date(int(value[:4]), int(value[4:6]), int(value[6:])) > datetime.date(int(temp['endDate'][:4]), int(temp['endDate'][5:7]), int(temp["endDate"][8:])):
                         flag = 1
                         break
                 elif key == 'endDate':
-                    if datetime.date(int(value[:4]), int(value[4:6]), int(value[6:])) < datetime.date(int(temp['endDate'][:4]), int(temp['endDate'][5:7]), int(temp["endDate"][8:])):
+                    if datetime.date(int(value[:4]), int(value[4:6]), int(value[6:])) < datetime.date(int(temp['startDate'][:4]), int(temp['startDate'][5:7]), int(temp["startDate"][8:])):
                         flag = 1
                         break
                 elif key == 'location':
