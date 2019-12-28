@@ -32,7 +32,7 @@ def update(request, weeks):
 
     KEY = config('KEY')
     base_url = 'http://kopis.or.kr/openApi/restful/'
-    list_of_shows = f'{base_url}pblprfr?service={KEY}&stdate=20191017&eddate=20191231&cpage=1&rows=3000'
+    list_of_shows = f'{base_url}pblprfr?service={KEY}&stdate={nowDate}&eddate={afteryear}&cpage=1&rows=3000'
     response = requests.get(list_of_shows)
     result = response.text
     tree = elemTree.fromstring(result)
@@ -153,7 +153,9 @@ def update(request, weeks):
                 temp.ticketUrl = ''.join(ticketUrl)
             temp.save()
             cnt += 1
+            print(title, address, type, temp.startDate, temp.endDate)
         except:
+            print('error')
             continue
 
     KEY2 = config('KEY2')
@@ -169,20 +171,22 @@ def update(request, weeks):
             temp = Exhibition()
             eventID = t.find('seq').text
             temp.eventID = t.find('seq').text
-            if Classic.objects.filter(eventID=f'{eventID}'):
+            startDate = t.find('startDate').text
+            temp.startDate = datetime.date(int(startDate[:4]), int(startDate[4:6]), int(startDate[6:]))
+            endDate = t.find('endDate').text
+            temp.endDate = datetime.date(int(endDate[:4]), int(endDate[4:6]), int(endDate[6:]))
+            if Exhibition.objects.filter(eventID=f'{eventID}'):
                 temp = get_object_or_404(Exhibition, eventID = eventID)
                 temp.createdAt = now
-                temp.eventStatus = '전시 중' if int(startDate) < int(nowDate) <int(endDate) else '전시 종료' if int(endDate) < int(nowDate) else '전시 예정'
+                temp.eventStatus = '전시 중' if (temp.startDate) < datetime.date.today() < (temp.endDate) else '전시 종료' if (temp.endDate) < datetime.date.today() else '전시 예정'
                 temp.save()
                 print('넘어갑니다')
                 continue            
             temp.title = t.find('title').text
-            temp.startDate = t.find('startDate').text.replace('.', '-')
-            temp.endDate = t.find('endDate').text.replace('.', '-')
             temp.location = t.find('place').text
             temp.imgUrl = t.find('thumbnail').text
             temp.type = '전시'
-            temp.createAt = now
+            temp.createdAt = now
 
             show_url = f'{base_url}d/?seq={eventID}&serviceKey={KEY2}'
 
@@ -191,11 +195,13 @@ def update(request, weeks):
             detail_tree = elemTree.fromstring(detail_result)
             detail_ts = detail_tree.find('./msgBody/perforInfo')
             address = detail_ts.find('placeAddr').text
+            # print(address)
             temp.address = detail_ts.find('placeAddr').text
-            if not ('인천' in address or '서울' in address or '경기' in address): 
+            if address != None and not ('인천' in temp.address or '서울' in temp.address or '경기' in temp.address): 
                 continue
-
-            temp.eventStatus = '전시 중' if int(startDate) < int(nowDate) <int(endDate) else '전시 종료' if int(endDate) < int(nowDate) else '전시 예정'
+            if address == None:
+                temp.address = ' '
+            temp.eventStatus = '전시 중' if (temp.startDate) < datetime.date.today() < (temp.endDate) else '전시 종료' if (temp.endDate) < datetime.date.today() else '전시 예정'
             temp.performer = ' '
             temp.director = ' '
             temp.fee = detail_ts.find('price').text
@@ -207,6 +213,7 @@ def update(request, weeks):
             temp.save()
             cnt += 1
         except:
+            print('error')
             continue
     return JsonResponse({'cnt': cnt})
 
@@ -286,5 +293,6 @@ def getArt(request):
             }
             result[cnt] = temp
             cnt += 1
+            print(title, address, type)
 
     return JsonResponse(result)
