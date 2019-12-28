@@ -22,11 +22,11 @@ tables = {
 genres = {
     'Musical' :Musical, 'Classic': Classic, 'Play' : Play, 'Complex' : Complex, 'Exhibition' : Exhibition, 'Concert' :Concert, 'Opera': Classic
 }
-def update(request):
+def update(request, weeks):
     
     now = datetime.datetime.now()
     nowDate = now.strftime('%Y%m%d')
-    afteryear = now + datetime.timedelta(weeks=3)
+    afteryear = now + datetime.timedelta(weeks=weeks)
     afteryear = afteryear.strftime('%Y%m%d')
 
 
