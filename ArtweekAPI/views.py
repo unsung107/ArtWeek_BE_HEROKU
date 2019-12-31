@@ -225,10 +225,18 @@ def getArt(request):
 
     result = {}
     cnt = 0
-
+    checkGenres = []
     for genre, genreModel in genres.items():
         if request.data.get(genre) == None:
             continue
+        else:
+            checkGenres.append(genreModel)
+    if not checkGenres:
+        checkGenres = [('Musical', Musical), ('Classic', Classic), ('Play', Play), ('Complex', Complex), ('Exhibition', Exhibition), ('Concert', Concert)]
+
+    for genre, genreModel in checkGenres:
+        # if request.data.get(genre) == None:
+        #     continue
         for art in genreModel.objects.all():
             
             if genre == 'Musical':
