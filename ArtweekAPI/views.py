@@ -287,11 +287,11 @@ def getArt(request):
                         flag = 1
                         break
                 elif key == 'latitude':
-                    if abs(int(value) - int(temp['latitude']) > 0.05):
+                    if abs(float(value) - float(temp['latitude']) > 0.05):
                         flag = 1
                         break
                 elif key == 'longitude':            
-                    if abs(int(value) - int(temp['longitude']) > 0.05):
+                    if abs(float(value) - float(temp['longitude']) > 0.05):
                         flag = 1
                         break
             if flag: continue
